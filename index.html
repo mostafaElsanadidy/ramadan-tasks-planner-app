@@ -1,0 +1,2651 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ramadan Focus Lite</title>
+<link rel="manifest" href="manifest.json">
+<style>
+  /* body {
+    margin:0; padding:0; font-family:'Arial',sans-serif;
+    background: linear-gradient(#1e1e2f,#3a3a5c);
+    color:#fff; display:flex; flex-direction:column; align-items:center; min-height:100vh;
+  } */
+
+  /* body {
+    margin:0;
+    padding:0;
+    font-family:'Arial',sans-serif;
+    color:#fff;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    min-height:100vh;
+    position: relative;
+    background: url("ramadan-bg.jpg") no-repeat center center;
+    background-attachment: fixed;
+    background-size: cover;} */
+    /* background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+              url("icons/icon-192.png") no-repeat center center fixed;
+    background-size: cover; */
+
+  body {
+    margin:0;
+    padding:0;
+    font-family:'Arial',sans-serif;
+    color:#fff;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    min-height:100vh;
+    position: relative;
+
+    /* background: 
+    /* linear-gradient(rgba(10,15,40,0.85), rgba(10,15,40,0.9)), */
+                /* url("ramadan-bg-2.webp") no-repeat center center fixed; */
+    /* background-size: cover; */ 
+
+    /* body { */
+    
+  /* } */
+
+    @supports (background-image: url("test.webp")) {
+      /* body { */
+        background: url("ramadan-bg-2.webp") no-repeat center center;
+        background-size: cover;
+      /* } */
+    }
+    else{
+      background: url("ramadan-bg-2.png") no-repeat center center;
+      background-size: cover;
+    }
+    touch-action: pan-y;
+    /* touch-action: manipulation; */
+     /* مهم جدًا لمنع التداخل مع السحب الجانبي */
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55); /* درجة التعتيم */
+    z-index: -1;
+  }
+
+  
+
+
+  header { text-align:center; margin-top:20px; }
+  header h1 { font-size:2em; margin-bottom:5px; }
+  header p { font-size:1em; color:#f0c674; }
+
+  .clock { font-size:2.5em; margin:15px; }
+  .current-task { font-size:1.5em; margin-bottom:15px; text-align:center; }
+  .active-task {
+    border: 2px solid gold;
+    background: rgba(255, 217, 0, 0.3);  /* لون ذهبي فاتح */
+  }
+
+  button { background:#f0c674; border:none; color:#1e1e2f; padding:10px 20px; border-radius:8px; cursor:pointer; margin-bottom:10px; }
+
+  #pagesReadToday{
+    width: 50%;
+    height: 20px;              /* 👈 هنا ارتفاع أكبر */
+    padding: 12px 15px;
+    font-size: 18px;
+    border-radius: 12px;
+    border: 2px solid #c9a227; /* ذهبي */
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    outline: none;
+    transition: 0.3s ease;
+    box-shadow: 0 0 10px rgba(201,162,39,0.3);
+  }
+
+  #pagesReadToday:focus{
+    border-color: gold;
+    box-shadow: 0 0 15px rgba(255,215,0,0.6);
+    font-size: 20px;
+    text-align: center;
+  }
+
+  #pagesReadToday::-webkit-inner-spin-button,
+  #pagesReadToday::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  /* Overlay */
+  #overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(4px);
+    /* backdrop-filter: blur(4px); */ /* تأثير ضبابي خلف المينيو */
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s ease;
+    z-index: 998;
+    /* display: none; نضيف هذا لجعل العنصر غير قابل للنقر */
+    pointer-events: none;
+         /* 🔥 ده المهم */
+    /* نمنع التفاعل مع العنصر */
+  }
+
+  #overlay.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;   /* يشتغل بس لما يكون ظاهر */
+  }
+  
+  /*
+  
+  #overlay.active {
+    opacity: 1;
+    pointer-events: auto;   /* هنا بس يستقبل لمس */
+  /* } */
+ /* #overlay.active {
+  pointer-events: auto;
+} */
+  
+
+  /* تحسين شكل المينيو */
+  #sideChecklist {
+    position: fixed;
+    top:0;
+    right:-280px;
+    /* right: 0; */
+    /* width:270px; */
+    width:280px;
+    height:100%;
+    /* 2e2e50 */
+    /* ea0606 */
+    background:#2e2e506c;
+    /* background: linear-gradient(rgba(10,15,40,0.95), rgba(10,15,40,0.98)); */
+    /* background: "rgba(255,215,0,0.200)"; */
+    /* background: rgba(0,0,0,0.100); */
+    /* backdrop-filter: blur(4px); */
+    /* overflow-y:auto; */
+    /* overflow: visible; */
+    
+    padding:20px;
+    transition: right 0.3s cubic-bezier(.25,.8,.25,1);
+    
+    max-height: 100vh;
+    z-index:999;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.4);
+
+    overflow-y: hidden;
+    overflow-x:hidden;
+    -webkit-overflow-scrolling: touch;
+    /* -webkit-overflow-scrolling: touch; */
+    pointer-events: none;   /* 🚫 لما يكون مقفول */
+    /* visibility: hidden; */
+  }
+
+  /* #sideChecklist {
+    position: fixed; top:0; right:-270px; width:270px; height:100%;
+    background:#2e2e50; padding:20px; transition:right 0.3s ease; overflow-y:auto; z-index:999;
+  } */
+  #sideChecklist.show { right:0; pointer-events: auto;   /* ✅ لما يفتح */overflow-y:auto; 
+      /* visibility: visible; */
+  }
+  #sideChecklist label { display:block; margin-bottom:15px; color:#fff; }
+  #sideChecklist small { color:#ccc; font-size:0.8em; }
+
+  /* #installBtn { display:none; } */
+
+  /* Splash overlay */
+  #splash {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(rgba(10,15,40,0.95), rgba(10,15,40,0.98)),
+                url("ramadan-bg-2.webp") no-repeat center center;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    animation: fadeOut 1s ease 2.5s forwards;
+    color: gold; font-size:2em; text-shadow:1px 1px 3px #000;
+  }
+
+  .splash-content {
+    text-align: center;
+    color: gold;
+    font-size: 28px;
+    animation: scaleIn 1.2s ease;
+  }
+
+  @keyframes fadeOut {
+    to {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  @keyframes scaleIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  /* .progress-circle { margin:15px; width:120px; height:120px; border-radius:50%; border:10px solid #f0c674; display:flex; align-items:center; justify-content:center; font-size:1.5em; } */
+
+  .progress-circle {
+    margin:15px;
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    /* border:10px solid currentColor; 👈 المهم هنا */
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.5em;
+    font-weight:bold;
+    transition:0.3s ease;
+
+    background: conic-gradient(#f0c674 0%, #2e2e506c 0%);
+    /* background: rgba(0,0,0,0.6); */
+  }
+
+  .task-item{
+    padding:10px;
+    margin-bottom:8px;
+    background:#2e2e50;
+    border-radius:8px;
+    /* cursor:grab; */
+    /* transition:0.2s; */
+    transition: transform 0.2s ease;
+    touch-action: pan-y; 
+    /* مهم جدًا */
+    position: relative;
+    user-select: none;
+    /* touch-action: none;   مع pointer events أفضل */
+    cursor: grab;
+  }
+
+  
+  .task-item:active{
+    cursor:grabbing;
+    opacity:0.7;
+  }
+
+  .task-item.dragging{
+    background:gold;
+    color:#000;
+  }
+
+  .task-checked {
+      background: rgba(255,215,0,0.09);
+  }
+
+  .quran-tracker{
+    margin: 15px 0;
+  }
+
+  .quran-tracker label{
+    display:block;
+    margin-bottom:6px;
+    color: gold;
+    font-weight:bold;
+  }
+
+  .quran-tracker {
+    width: 100%;
+    max-width: 350px;
+    margin: 20px auto;
+    padding: 20px;
+    text-align: center;
+
+    background: rgba(0,0,0,0.6);
+    border-radius: 15px;
+    backdrop-filter: blur(6px);
+  }
+
+  .quran-tracker input {
+    width: 80%;
+    padding: 8px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: none;
+    text-align: center;
+  }
+
+  .quran-tracker button {
+    display: block;
+    margin: 10px auto;
+  }
+
+  .center-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60vh;
+  }
+
+  .report-modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.7);
+
+    /* display:none; */
+    display: flex;
+    justify-content:center;
+    align-items:center;
+
+    z-index:2000;
+
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;   /* 🚫 لما يكون مقفول */
+    
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+
+
+    overflow-y:hidden;
+    /* width: 300px; */
+  }
+
+  .report-modal.show{
+    /* display:flex; */
+    visibility: visible;
+    opacity: 1;
+
+    pointer-events: auto;   /* ✅ لما يفتح */
+    overflow-y:auto;
+  }
+
+  .report-card{
+    background:linear-gradient(145deg,#0f0f1f,#1b1b35);
+    /* background:rgba(0,0,0,6); */
+    /* background:#2e2e50ca; */
+    padding:25px;
+    border-radius:20px;
+    width:90%;
+    max-width:400px;
+    color:white;
+    border:1px solid rgba(255,215,0,0.4);
+    box-shadow:0 0 30px rgba(255,215,0,0.3);
+    
+    max-height: 80vh;       /* 👈 مهم */
+    overflow-y: auto;       /* 👈 Scroll داخلي */
+    
+    direction: rtl;
+    text-align: right;
+  }
+  /* * {
+    outline: 1px solid red;
+  } */
+  footer { margin-top:auto; margin-bottom:20px; font-size:0.9em; color:#ccc; text-align:center; }
+</style>
+</head>
+<body>
+
+<div id="splash">
+  <div class="splash-content">
+    <h1>رمضان كريم 🌙</h1>
+    <p>Ramadan Focus</p>
+  </div>
+</div>
+<header>
+  <h1>🌙 رمضان كريم</h1>
+  <p>نظم يومك مع Ramadan Focus Lite</p>
+</header>
+
+<div class="clock" id="clock">00:00:00</div>
+<div class="current-task" id="currentTask">جاري التحميل...</div>
+<!-- <div class="task-item" data-id="${task.id}"></div> -->
+<button id="toggleChecklist">☰ المهام اليومية</button>
+<div id="overlay"></div>
+<div id="sideChecklist"></div>
+<div class="progress-circle" id="progress">0%</div>
+
+
+<div class="center-wrapper">
+  <div class="quran-tracker">
+    <h3>📖 تتبع القرآن</h3>
+    <input type="number" id="pagesReadToday" placeholder="عدد الصفحات اليوم">
+    <button onclick="addPagesForToday()">إضافة</button>
+
+    <p>إجمالي الصفحات: <span id="totalPages">0</span> / 604</p>
+    <p>النسبة: <span id="quranPercent">0%</span></p>
+    <p>عدد الختمات: <span id="khatmaCount">0</span></p> 
+</div>
+</div>
+
+<div id="khatmaBadge" style="display:none; margin-top:15px; padding:10px; background:gold; color:black; border-radius:8px;">
+  🎉 مبروك! أتممت ختمة كاملة 🎉
+</div>
+
+<button onclick="openReport(7)">📊 تقرير أسبوعي</button>
+<!-- <div class=""> -->
+<button onclick="openReport(30)">📅 تقرير شهر رمضان المبارك</button>
+<!-- <button onclick="
+  setTimeout(()=>{
+    exportPDF();
+  }, 300);">📄 تحميل PDF</button> -->
+<!-- </div> -->
+
+<div id="weeklyReport"></div>
+
+<div id="monthlyReport" class="report-modal">
+  <div class="report-card">
+    <span onclick="closeReport()">✖</span>
+    <div id="reportContent"></div>
+  </div>
+</div>
+
+<!-- <div id="installBtn" style="display:none;">📲 تثبيت التطبيق</div> -->
+<button id="installBtn">📲 تثبيت التطبيق</button> 
+
+<!-- <h2>My QR Generator</h2>
+    <input type="text" id="text" placeholder="Enter text or URL">
+    <button onclick="generateQR()">Generate</button>
+    <div id="qrcode"></div> -->
+
+
+<footer>
+  
+  <a href="https://www.facebook.com/mostafa.elsanadidy/" style="color:#fff;">Built by Mostafa Elsanadidy – Smart Systems for Gyms & Cafes</a>
+  <!-- URL_DESTINATION -->
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  let prayerTimesToday = {};
+  // let tasks = [];
+  let tasks = [];  // هنا بقى متاح لكل السكربت
+  // let url = '';
+  let totalPagesRead = parseInt(localStorage.getItem("totalPagesRead")) || 0;
+  let lastKhatmaCount = parseInt(localStorage.getItem("lastKhatmaCount")) || 0;
+
+  let currentPages = parseInt(localStorage.getItem("currentPages")) || 0;
+  let khatmaCount = parseInt(localStorage.getItem("khatmaCount")) || 0;
+
+
+
+  // async function fetchPrayerTimes(cityName="Cairo", countryName="Egypt") {
+  //   try {
+  //     const city = encodeURIComponent(cityName);
+  //     const country = encodeURIComponent(countryName);
+
+  //     const response = await fetch(`https://api.aladhan.com/v1/timingsByCity?city=${city}&country=${country}&method=2`);
+  //     const data = await response.json();
+
+  //     if(response.status !== 200 || data.code !== 200){
+  //       console.error("Failed to fetch prayer times:", data);
+  //       return null;
+  //     }
+
+  //     const times = data.data.timings;
+  //     return {
+  //       Fajr: { start: times.Fajr, end: times.Dhuhr },
+  //       Dhuhr: { start: times.Dhuhr, end: times.Asr },
+  //       Asr: { start: times.Asr, end: times.Maghrib },
+  //       Maghrib: { start: times.Maghrib, end: times.Isha },
+  //       Isha: { start: times.Isha, end: times.Fajr }
+  //     };
+  //   } catch(err){
+  //     console.error("Fetch error:", err);
+  //     return null;
+  //   }
+  // }
+
+  // async function fetchPrayerTimes() {
+  //   return new Promise((resolve) => {
+
+  //     const today = new Date();
+  //     const timestamp = Math.floor(today.getTime() / 1000);
+
+  //     if (!navigator.geolocation) {
+  //       console.log("Geolocation not supported");
+  //       resolve(null);
+  //       return;
+  //     }
+
+  //     navigator.geolocation.getCurrentPosition(async function(position) {
+
+  //       const latitude = position.coords.latitude;
+  //       const longitude = position.coords.longitude;
+
+  //       let url;
+  //       url = `https://api.aladhan.com/v1/timings/${timestamp}?latitude=${latitude}&longitude=${longitude}&method=5`;
+  //       // const url = `https://api.aladhan.com/v1/timingsByCity?city=Cairo&country=Egypt&method=2`;
+        
+  //       try {
+  //         const response = await fetch(url);
+  //         const data = await response.json();
+
+  //         if(data.code !== 200){
+  //           resolve(null);
+  //           return;
+  //         }
+
+  //         const timings = data.data.timings;
+
+  //         resolve({
+  //           Fajr: { start: timings.Fajr, end: timings.Dhuhr },
+  //           Dhuhr: { start: timings.Dhuhr, end: timings.Asr },
+  //           Asr: { start: timings.Asr, end: timings.Maghrib },
+  //           Maghrib: { start: timings.Maghrib, end: timings.Isha },
+  //           Isha: { start: timings.Isha, end: timings.Fajr }
+  //         });
+
+  //       } catch(err){
+  //         console.log("Fetch error:", err);
+  //         resolve(null);
+  //       }
+
+  //     }, function(error) {
+  //       alert("Location permission is required to get prayer times.");
+        
+  //       resolve(null);
+  //     });
+
+  //   });
+  // }
+
+  // function showWeeklyReport(){
+  //   const weeklyData = JSON.parse(localStorage.getItem("weeklyQuran")) || {};
+  //   let output = "<h4>تقرير آخر 7 أيام</h4>";
+
+  //   const dates = Object.keys(weeklyData).slice(-7);
+
+  //   dates.forEach(date=>{
+  //     output += `${date} : ${weeklyData[date]} صفحة<br>`;
+  //   });
+
+  //   document.getElementById("weeklyReport").innerHTML = output;
+  // }
+
+  function generateQR() {
+      document.getElementById("qrcode").innerHTML = "";
+      new QRCode(document.getElementById("qrcode"), {
+          text: document.getElementById("text").value,
+          width: 200,
+          height: 200
+      });
+  }
+  
+  function showWeeklyReport(){
+    const dailyTasks = JSON.parse(localStorage.getItem("dailyTasks")) || {};
+    let output = "<h4>تقرير آخر 7 أيام</h4>";
+
+    const dates = Object.keys(dailyTasks).slice(-7);
+
+    dates.forEach(date=>{
+      output += `<strong>${date}</strong><br>`;
+      dailyTasks[date].forEach(dailyTask=>{
+        const status = dailyTask.checked ? "✅" : "❌";
+        const pagesInfo = dailyTask.pages ? ` - ${dailyTask.pages} صفحة` : "";
+        output += `&nbsp;&nbsp;${status} ${dailyTask.name}${pagesInfo}<br>`;
+      });
+      output += "<br>";
+    });
+
+    document.getElementById("weeklyReport").innerHTML = output;
+  }
+
+  function generateMonthlyReport(countOfDays){
+
+    // let data = JSON.parse(localStorage.getItem("monthlyData")) || {};
+    const dailyTasks = JSON.parse(localStorage.getItem("dailyTasks")) || {};
+
+    let total = 0;
+    let days = 0;
+    let bestDay = 0;
+
+    // Object.values(data).forEach(task=>{
+    //   total += task.pages;
+    //   if(task.pages > 0) days++;
+    //   if(task.pages > bestDay) bestDay = task.pages;
+    // });
+
+    
+
+    let output = countOfDays<=7 ? "<h4>تقرير آخر 7 أيام</h4>" : "<h3>📅 التقرير الشهري</h3>";
+    
+    // let output = "";
+
+    const dates = Object.keys(dailyTasks).slice(-countOfDays);
+
+    dates.forEach(date=>{
+      output += `<strong>${date}</strong><br>`;
+      dailyTasks[date].forEach(dailyTask=>{
+        const status = dailyTask.checked ? "✅" : "❌";
+        // if (status == "❌"){return}
+        const pagesInfo = dailyTask.pages ? ` - ${dailyTask.pages} صفحة` : "";
+        output += `&nbsp;&nbsp;${status} ${dailyTask.name}${pagesInfo}<br>`;
+        pages = dailyTask.pages ? dailyTask.pages : 0
+        total += pages;
+        if(pages > 0) days++;
+        if(pages > bestDay) bestDay = pages;
+      });
+      output += "<br>";
+    });
+
+    let percent = ((total / 604) * 100).toFixed(1);
+
+    // "weeklyReport"
+    // document.getElementById("reportContent").innerHTML = `
+    //   <h3>📅 Monthly Report</h3>
+    //   <p>${output}</p>
+    //   <p>📖 Total Pages: ${total}</p>
+    //   <p>📊 Completion: ${percent}%</p>
+    //   <p>✅ Active Days: ${days}</p>
+    //   <p>🏆 Best Day: ${bestDay} pages</p>
+    // `;
+    // const savedTasks = JSON.parse(localStorage.getItem("saved_Tasks")) || [];
+    // <p>${savedTasks}</p>
+    //   <p>${dailyTasks[formatDateKey()].map(t=>t.checked)}</p>
+    
+
+    document.getElementById("reportContent").innerHTML = `
+      <p>${output}</p>
+      <p>📖 إجمالي الصفحات: ${total}</p>
+      <p>📊 نسبة الإنجاز: ${percent}%</p>
+      <p>✅ عدد أيام القراءة: ${days}</p>
+      <p>🏆 أفضل يوم: ${bestDay} صفحة</p>
+    `;
+
+    // const { jsPDF } = window.jspdf;
+    // const doc = new jsPDF();
+
+    // doc.setFont("helvetica");
+    // doc.setFontSize(14);
+
+    // doc.text("التقرير الشهري", 105, 20, { align: "center" });
+    // // doc.text(`إجمالي الصفحات: ${total}`, 20, 40);
+    // // doc.text(`نسبة الإنجاز: ${percent}%`, 20, 50);
+    // // doc.text(`عدد أيام القراءة: ${days}`, 20, 60);
+    // // doc.text(`أفضل يوم: ${bestDay} صفحة`, 20, 70);
+    // doc.text(`أفضل يوم: ${output} صفحة`, 20, 70);
+
+    // doc.save("Ramadan-Monthly-Report.pdf");
+  }
+
+  function openReport(countOfDays){
+    generateMonthlyReport(countOfDays);
+    document.getElementById("monthlyReport").classList.add("show");
+    overlay.classList.add("show");
+    document.body.style.overflow = "hidden"; // منع الاسكرول
+  }
+  
+  function closeReport(){
+    document.getElementById("monthlyReport").classList.remove("show");
+    overlay.classList.remove("show");
+    document.body.style.overflow = "auto"; // رجع الاسكرول
+  }
+  
+  // async function exportPDF(){
+
+  //   const { jsPDF } = window.jspdf;
+  //   const doc = new jsPDF();
+
+  //   let data = JSON.parse(localStorage.getItem("dailyTasks")) || {};
+  //   let total = 0;
+  //   let days = 0;
+  //   let bestDay = 0;
+
+  //   Object.values(data).forEach(task=>{
+  //     total += task.pages;
+  //     if(task.pages > 0) days++;
+  //     if(task.pages > bestDay) bestDay = task.pages;
+  //   });
+
+  //   let percent = ((total / 604) * 100).toFixed(1);
+
+  //   doc.setFont("helvetica");
+  //   doc.setFontSize(14);
+
+  //   doc.text("التقرير الشهري", 105, 20, { align: "center" });
+  //   doc.text(`إجمالي الصفحات: ${total}`, 20, 40);
+  //   doc.text(`نسبة الإنجاز: ${percent}%`, 20, 50);
+  //   doc.text(`عدد أيام القراءة: ${days}`, 20, 60);
+  //   doc.text(`أفضل يوم: ${bestDay} صفحة`, 20, 70);
+
+  //   doc.save("Ramadan-Monthly-Report.pdf");
+  // }
+
+  // async function exportPDF(){
+
+  //   // ✅ توليد PDF بالعربي بشكل صحيح
+  //   const { jsPDF } = window.jspdf;
+  //   const reportElement = document.querySelector(".report-card");
+
+  //   const canvas = await html2canvas(reportElement, {
+  //     scale: 2,
+  //     useCORS: true
+  //   });
+
+  //   // const imgData = canvas.toDataURL("ramadan report");
+  //   const imgData = canvas.toDataURL("image/png");
+
+  //   const pdf = new jsPDF("p", "mm", "a4");
+  //   const pageWidth = pdf.internal.pageSize.getWidth();
+
+  //   const imgWidth = pageWidth - 20;
+  //   const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+  //   pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
+
+  //   pdf.save("التقرير-الشهري.pdf");
+  // }
+
+  async function exportPDF(){
+    const reportElement = document.querySelector(".report-card");
+
+    if(!reportElement){
+      alert("report-card not found");
+      return;
+    }
+    try {
+
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      const canvas = await html2canvas(reportElement, {
+        scale: 2,
+        backgroundColor: "#1b1b35",
+        useCORS: true
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF("p", "mm", "a4");
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const imgWidth = pageWidth - 20;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
+      pdf.save("التقرير-الشهري.pdf");
+
+    } catch (error){
+      // console.error(error);
+      // alert("Error generating PDF");
+      console.error("PDF ERROR:", error, window.jspdf, html2canvas);
+      alert(error.message);
+    }
+  }
+
+  function requestNotification(){
+    if(Notification.permission !== "granted"){
+      Notification.requestPermission();
+    }
+  }
+
+  function sendDailyReminder(){
+    if(Notification.permission === "granted"){
+      new Notification("📖 لا تنسَ ورد القرآن اليوم");
+    }
+  }
+
+  async function fetchPrayerTimes() {
+
+    const today = new Date();
+    const timestamp = Math.floor(today.getTime() / 1000);
+
+    return new Promise((resolve) => {
+
+      if (!navigator.geolocation) {
+        console.log("Geolocation not supported → fallback to city");
+        fetchByCity(resolve);
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        async function(position) {
+
+          try {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            const url = `https://api.aladhan.com/v1/timings/${timestamp}?latitude=${latitude}&longitude=${longitude}&method=5`;
+
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data.code !== 200) {
+              console.log("API error → fallback to city");
+              fetchByCity(resolve);
+              return;
+            }
+
+            resolve(formatTimings(data.data.timings));
+
+          } catch (err) {
+            console.log("Fetch error → fallback to city");
+            fetchByCity(resolve);
+          }
+
+        },
+        function(error) {
+          console.log("Permission denied → fallback to city");
+          fetchByCity(resolve);
+        }
+      );
+
+    });
+  }
+
+  async function fetchByCity(resolve) {
+    try {
+      const url = `https://api.aladhan.com/v1/timingsByCity?city=Cairo&country=Egypt&method=2`;
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.code !== 200) {
+        resolve(null);
+        return;
+      }
+
+      resolve(formatTimings(data.data.timings));
+
+    } catch (err) {
+      console.log("City fetch failed");
+      resolve(null);
+    }
+  }
+
+  function formatTimings(timings) {
+    return {
+      // Maghrib: { start: cleanTime(timings.Maghrib), end: cleanTime(timings.Isha) },
+      Maghrib: { start: cleanTime(timings.Maghrib), end: addMinutes(cleanTime(timings.Maghrib), 30) },
+      Iftar: { start: addMinutes(cleanTime(timings.Maghrib), 30), end: addMinutes(cleanTime(timings.Maghrib), 60) },
+      RestAfterIftar: { start: addMinutes(cleanTime(timings.Maghrib), 60), end: cleanTime(timings.Isha) },
+      Isha: { start: cleanTime(timings.Isha), end: addMinutes(cleanTime(timings.Isha), 90) },
+      Family: { start: addMinutes(cleanTime(timings.Isha), 90), end: addMinutes(cleanTime(timings.Isha), 150) },
+      Gym: { start: addMinutes(cleanTime(timings.Isha), 170), end: addMinutes(cleanTime(timings.Isha), 230) },
+      Quran: { start: addMinutes(cleanTime(timings.Isha), 270), end: addMinutes(cleanTime(timings.Isha), 330) },
+      
+      // Rest: addHours(cleanTime(timings.Isha), 6),
+      Rest: { start: addMinutes(cleanTime(timings.Isha), 330), end: addHours(cleanTime(timings.Fajr), -2) },
+      Suhoor: { start: addHours(cleanTime(timings.Fajr), -2), end: cleanTime(timings.Fajr) },
+      // Suhoor: { start: "03:30", end: cleanTime(timings.Fajr) },
+      
+      Fajr: { start: cleanTime(timings.Fajr), end: addMinutes(cleanTime(timings.Fajr), 30) },
+      Sleep: { start: addMinutes(cleanTime(timings.Fajr), 30), end: "10:30" },
+      Work1: { start: "11:00", end: "17:00" },
+      Dhuhr: { start: cleanTime(timings.Dhuhr), end: addMinutes(cleanTime(timings.Dhuhr), 20) },
+      // Work2: { start: "13:30", end: "17:00" },
+      Work2: { start: addMinutes(cleanTime(timings.Dhuhr), 20), end: cleanTime(timings.Asr) },
+      Asr: { start: cleanTime(timings.Asr), end: addMinutes(cleanTime(timings.Asr), 30) },
+      // Work3: { start: "13:30", end: "17:00" }
+      Work3: { start: addMinutes(cleanTime(timings.Asr), 20), end: "17:00" },
+      };
+  }
+
+  function cleanTime(timeString) {
+    return timeString.split(" ")[0]; // يشيل (+02)
+  }
+
+
+
+  // function addPages(){
+  //   const pages = parseInt(document.getElementById("pagesReadToday").value);
+
+  //   if(!pages || pages <= 0) return;
+
+  //   totalPagesRead += pages;
+
+  //   localStorage.setItem("totalPagesRead", totalPagesRead);
+
+  //   updateQuranStats();
+  //   document.getElementById("pagesReadToday").value = "";
+  // }
+  
+  function addPagesForToday(){
+    const pages = parseInt(document.getElementById("pagesReadToday").value);
+    if(!pages || pages <= 0) return;
+
+    // const todayKey = new Date().toISOString().split("T")[0];
+    let todayKey = formatDateKey(); 
+    let dailyTasks = JSON.parse(localStorage.getItem("dailyTasks")) || {};
+
+    if(!dailyTasks[todayKey]){
+      dailyTasks[todayKey] = [];
+    }
+
+    let taskEntry = dailyTasks[todayKey].find(t => t.name === "قراءة القرآن");
+    if(taskEntry){
+      taskEntry.pages += pages;
+      taskEntry.checked = true;
+    } else {
+      dailyTasks[todayKey].push({
+        // id: index,
+        name: "قراءة القرآن",
+        checked: true,
+        pages: pages
+      });
+    }
+    // toggleTask(taskEntry.id)
+    const labels = Array.from(sideMenu.querySelectorAll("label"));
+    const label = labels.find(t => t.dataset.id == taskEntry.id);
+
+    // label.innerHTML = `
+    //     <input type="checkbox" class="task" data-index="${taskEntry.id}" ${taskEntry.checked ? "checked" : ""}  /> ${taskEntry.name} <br>
+    //   `;
+      const checkbox = label.querySelector("input");
+      checkbox.checked = !checkbox.checked;
+      // <small>${taskEntry.time?.start || ""} - ${taskEntry.time?.end || ""}</small>
+    // if (taskEntry.checked === true && label) {
+    //     label.style.background = "rgba(255,215,0,0.09)";
+    // }
+    const current = getCurrentTask()
+    if(taskEntry?.name === current){
+        label.style.background = "rgba(255,215,0,0.3)"; // لون ذهبي فاتح
+        
+        // label.innerHTML += `${output}`
+          // Optional: Scroll to current task
+          // label.scrollIntoView({behavior:"smooth", block:"center"});
+      }else
+    if (taskEntry?.checked && label) {
+        // label.classList.add("task-checked");
+      label.style.background = "rgba(255,215,0,0.09)";
+    }else{
+      // label.classList.remove("task-checked");
+      label.style.background = "none";
+    }
+    localStorage.setItem("dailyTasks", JSON.stringify(dailyTasks));
+    // document.querySelectorAll(".task").forEach((t,i)=> t.checked = dailyTasks[todayKey][i].checked||false);
+    updateProgress();
+    addPages(); // لتحديث العداد
+    
+  }
+
+  // function updateQuranStats(){
+
+  //   const percent = Math.floor((totalPagesRead / 604) * 100);
+
+  //   const khatma = Math.floor(totalPagesRead / 604);
+
+  //   document.getElementById("totalPages").textContent = totalPagesRead;
+  //   document.getElementById("quranPercent").textContent = percent + "%";
+  //   document.getElementById("khatmaCount").textContent = khatma;
+  // }
+
+  // function updateQuranStats(){
+
+  //   const percent = Math.floor((totalPagesRead / 604) * 100);
+  //   const khatma = Math.floor(totalPagesRead / 604);
+
+  //   document.getElementById("totalPages").textContent = totalPagesRead;
+  //   document.getElementById("quranPercent").textContent = percent + "%";
+  //   document.getElementById("khatmaCount").textContent = khatma;
+
+  //   if (totalPagesRead >= 604) {
+  //     document.getElementById("khatmaBadge").style.display = "block";
+  //   }
+  //   if (khatma > lastKhatmaCount) {
+  //     document.getElementById("khatmaBadge").style.display = "block";
+  //     localStorage.setItem("lastKhatmaCount", khatma);
+  //   }
+
+  // }
+
+  function updateQuranStats(){
+
+    const percent = Math.floor((currentPages / 604) * 100);
+
+    document.getElementById("totalPages").textContent = currentPages;
+    document.getElementById("quranPercent").textContent = percent + "%";
+    document.getElementById("khatmaCount").textContent = khatmaCount;
+  }
+
+
+  function showKhatmaBadge(){
+
+    const badge = document.getElementById("khatmaBadge");
+    badge.style.display = "block";
+
+    setTimeout(()=>{
+      badge.style.display = "none";
+    }, 4000);
+  }
+
+  async function checkRamadan(){
+
+    const today = new Date();
+    const timestamp = Math.floor(today.getTime() / 1000);
+
+    const url = `https://api.aladhan.com/v1/gToH/${today.getDate()}-${today.getMonth()+1}-${today.getFullYear()}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    const hijriMonth = data.data.hijri.month.en;
+
+    if (hijriMonth !== "Ramadan") {
+      // مش رمضان → نصفر العداد
+      localStorage.removeItem("totalPagesRead");
+      localStorage.removeItem("lastKhatmaCount");
+      totalPagesRead = 0;
+    }
+  }
+
+
+
+
+
+  function addMinutes(timeStr, minutesToAdd) {
+    const [hours, minutes] = timeStr.split(":").map(Number);
+
+    const date = new Date();
+    date.setHours(hours);
+    date.setMinutes(minutes + minutesToAdd);
+    date.setSeconds(0);
+
+    const newHours = String(date.getHours()).padStart(2, "0");
+    const newMinutes = String(date.getMinutes()).padStart(2, "0");
+
+    return `${newHours}:${newMinutes}`;
+  }
+
+  function addHours(timeStr, hoursToAdd) {
+    return addMinutes(timeStr, hoursToAdd * 60);
+  }
+
+  // function createTask(name, startTime, durationMinutes) {
+  //   return {
+  //     name,
+  //     time: {
+  //       start: startTime,
+  //       end: addMinutes(startTime, durationMinutes)
+  //     },
+  //     checked: false
+  //   };
+  // }
+
+  // function createTask(name, startTime, duration,end = ''){
+  //   return {
+  //     id: crypto.randomUUID(), // 👈 أفضل وأضمن
+  //     name,
+  //     duration,
+  //     time:{
+  //       start: startTime,
+  //       // end: duration >= 0 ? addMinutes(startTime,duration) : end
+  //       end: addMinutes(startTime,duration)
+  //     },
+  //     checked:false,
+  //     pages:0
+  //   };
+  // }
+  function createTask(name, startTime, duration) {
+    return {
+      id: crypto.randomUUID(), // 👈 أفضل وأضمن
+      name,
+      time: {
+        start: startTime,
+        // end: duration >= 0 ? addMinutes(startTime,duration) : end
+        end: addMinutes(startTime,duration)
+      },
+      duration,
+      checked: false,
+      pages: 0
+    };
+  }
+  // Generate Side Menu dynamically
+  function generateSideMenu(){
+    const sideChecklist = document.getElementById("sideChecklist");
+    sideChecklist.innerHTML = "";
+
+    // let current_Start = addMinutes(prayerTimesToday.Maghrib, 20)
+
+    // tasks = [];
+
+    // tasks.push({ name: "صلاة المغرب", time: prayerTimesToday.Maghrib, checked: false });
+
+    // let currentStart = addMinutes(prayerTimesToday.Maghrib, 20);
+
+    // tasks.push(createTask("إفطار", currentStart, 60));
+
+    // currentStart = addMinutes(currentStart, 60);
+    // tasks.push(createTask("راحة", currentStart, 30));
+
+    // currentStart = addMinutes(currentStart, 30);
+    // tasks.push(createTask("صلاة العشاء", currentStart, 15));
+    
+    tasks.forEach((task,index)=>{
+      task.id = task.id || Date.now() + index; // إضافة معرف فريد لكل مهمة  
+      const label = document.createElement("label");
+      label.className = "task-item";
+      label.draggable = true;
+      // label.dataset.index = index;
+      label.dataset.id = task.id;
+
+      label.innerHTML = `
+        <input type="checkbox" class="task" data-id="${task.id}" />
+        ${task.name} <br>
+        <small>${task.time?.start || ""} - ${task.time?.end || ""}</small>
+      `;
+
+      // label.innerHTML = `
+      //   <div class="task-name">${task.name}</div>
+      //   <div class="task-time">
+      //     ${task.time.start} - ${task.time.end}
+      //   </div>
+      // `;
+      sideChecklist.appendChild(label);
+
+      const checkbox = label.querySelector("input");
+      checkbox.addEventListener("change",()=>toggleTask(task.id));
+    });
+    // load saved checkboxes
+    // const savedTasks = JSON.parse(localStorage.getItem("saved_Tasks")) || [];
+    // const savedTasks = JSON.parse("[]");
+    const savedTasks = JSON.parse(localStorage.getItem("dailyTasks")) || {};
+    
+    
+    // document.querySelectorAll(".task").forEach((t,i)=> t.checked = savedTasks[i].checked||false);
+    document.querySelectorAll(".task").forEach((t,i)=> t.checked = dailyTasks[formatDateKey()][i].checked||false);
+
+    // attach event listener
+    document.querySelectorAll(".task").forEach(t=>t.addEventListener("change", updateProgress));
+    updateProgress();
+  }
+
+  // Progress
+  const progress = document.getElementById("progress");
+  function updateProgress() {
+    // const tasksCheckbox = document.querySelectorAll(".task");
+    let dailyTasks = JSON.parse(localStorage.getItem("dailyTasks")) || {};
+    dailyTasks = dailyTasks[formatDateKey()]
+    const total = dailyTasks.length;
+    const done = [...dailyTasks].filter(t=>t.checked).length;
+    const percent = Math.round((done/total)*100);
+    progress.textContent = percent + "%";
+
+      // 👇 تغيير اللون حسب النسبة
+    if(percent < 30){
+      progress.style.color = "#ff4d4d6c"; // أحمر
+    }
+    else if(percent < 70){
+      progress.style.color = "#f0c6746c"; // ذهبي
+    }
+    else{
+      progress.style.color = "#4CAF506c"; // أخضر
+    }
+
+    progress.style.background =
+      `conic-gradient(${progress.style.color} ${percent}%, #2e2e50 ${percent}%)`;
+
+    const savedCheckedItems = [...dailyTasks].map(t=>t.checked) 
+    
+    // const json = JSON.stringify(savedCheckedItems)
+    // localStorage.setItem("saved_Tasks", JSON.stringify(savedCheckedItems));
+    // saveCheckbox([...dailyTasks])
+  }
+
+  // document.getElementById('toggleChecklist').addEventListener("click", ()=>{
+  //   document.getElementById("sideChecklist").classList.toggle("show");
+  // });
+
+  // const sideMenu = document.getElementById("sideChecklist");
+  //   const overlay = document.getElementById("overlay");
+  //   const toggleBtn = document.getElementById("toggleChecklist");
+
+  //   toggleBtn.addEventListener("click", ()=>{
+  //     // e.stopPropagation();
+  //     document.body.style.overflow = "auto";
+  //     sideMenu.classList.toggle("show");
+  //     overlay.classList.toggle("show");
+  //   });
+    
+  //   // toggleBtn.addEventListener("click", function(e){
+  //   //   e.stopPropagation();
+
+  //   //   if (sideMenu.classList.contains("show")) {
+  //   //     // لو مفتوح → اقفل
+  //   //     sideMenu.classList.remove("show");
+  //   //     overlay.classList.remove("show");
+  //   //   } else {
+  //   //     // لو مقفول → افتح
+  //   //     sideMenu.classList.add("show");
+  //   //     overlay.classList.add("show");
+  //   //   }
+  //   // });
+
+  //   overlay.addEventListener("click", ()=>{
+  //     document.body.style.overflow = "hidden";
+  //     sideMenu.classList.remove("show");
+  //     overlay.classList.remove("show");
+  //   });
+  
+    const sideMenu = document.getElementById("sideChecklist");
+    const overlay = document.getElementById("overlay");
+    const toggleBtn = document.getElementById("toggleChecklist");
+
+    function openMenu(){
+      sideMenu.classList.add("show");
+      overlay.classList.add("show");
+      // overlay.classList.add("active");
+      document.body.style.overflow = "hidden"; // منع الاسكرول
+    }
+
+    function closeMenu(){
+      sideMenu.classList.remove("show");
+      overlay.classList.remove("show");
+      // overlay.classList.remove("active");
+      document.body.style.overflow = "auto"; // رجع الاسكرول
+    }
+
+    toggleBtn.addEventListener("click", function(e){
+      e.stopPropagation();
+
+      if (sideMenu.classList.contains("show")) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    });
+
+    // overlay.addEventListener("click outside sidemenu", closeMenu);
+    // overlay.addEventListener("click outside report", closeMenu);
+
+    overlay.addEventListener("click", closeMenu);
+    // overlay.addEventListener("click", closeReport);
+
+    // overlay.addEventListener("click", () => {
+
+    //   if (sideMenu.classList.contains("show")) {
+    //     closeMenu();
+    //   }
+
+    //   if (report.classList.contains("show")) {
+    //     closeReport();
+    //   }
+
+    // });
+
+    // overlay.addEventListener("click", () => {
+    //   document.querySelectorAll(".report-modal").forEach(el => {
+    //     // el.classList.remove("show");
+    //     // overlay.classList.remove("show");
+    //     // document.body.style.overflow = "auto"; // رجع الاسكرول
+    //     closeReport()
+    //   });
+    // });
+
+    const reportModal = document.getElementById("monthlyReport");
+    reportModal.addEventListener("click", function(e){
+      e.stopPropagation();
+      //click exclude report-card
+      if(e.target === reportModal){
+        closeReport();
+      }
+      //click include report-card
+      // if (reportModal.classList.contains("show")){
+      //   closeReport()
+      // }
+    });
+    
+    
+    
+      let touchStartX = 0;
+    let touchEndX = 0;
+
+    const swipeArea = document.body; // أو حط ID العنصر اللي عايز السوايب عليه
+
+    swipeArea.addEventListener("touchstart", function(e) {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    swipeArea.addEventListener("touchend", function(e) {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    }, { passive: true });
+      
+    function handleSwipe() {
+      const swipeDistance = touchEndX - touchStartX;
+
+      if (Math.abs(swipeDistance) < 50) return; // تجاهل الحركات الصغيرة
+
+      // // سحب من اليمين لليسار لفتح
+      //   if(touchStartX > window.innerWidth - 50 && swipeDistance > 50){
+      //     openMenu();
+      //   }
+      //   // سحب من اليسار لليمين لإغلاق
+      //   if(swipeDistance < -50){
+      //     closeMenu();
+      //   }
+      if (swipeDistance > 0) {
+        console.log("Swiped Right");
+        closeMenu(); // غيرها باللي عندك
+      } else {
+        console.log("Swiped Left");
+        openMenu(); // غيرها باللي عندك
+      }
+    }
+
+
+  // document.addEventListener("click", function(event){
+
+  //   // const sideMenu = document.getElementById("sideChecklist");
+  //   // const toggleBtn = document.getElementById("toggleChecklist");
+
+  //   // const clickedInsideMenu = sideMenu.contains(event.target);
+  //   // const clickedOnButton = toggleBtn.contains(event.target);
+
+  //   // if (!clickedInsideMenu && !clickedOnButton) {
+  //   //   sideMenu.classList.remove("show");
+  //   // }
+
+  // });
+
+
+
+  // Clock + Current Task
+  // function getCurrentTask(){
+  //   if(tasks.length === 0) return "جاري التحميل...";
+
+  //   const now = new Date();
+  //   const currentMinutes = now.getHours()*60 + now.getMinutes();
+
+  //   for(let t of tasks){
+
+  //     let start = t.time.start.split(" ")[0]; // نشيل (+02)
+  //     let end = t.time.end.split(" ")[0];
+
+  //     const [sh,sm] = start.split(":").map(Number);
+  //     const [eh,em] = end.split(":").map(Number);
+
+  //     const startMin = sh*60 + sm;
+  //     const endMin = eh*60 + em;
+
+  //     if(currentMinutes >= startMin && currentMinutes < endMin){
+  //       return t.name;
+  //     }
+  //   }
+
+  //   return "استمتع بيومك 🌙";
+  // }
+
+  // function getCurrentTask(){
+  //   const now = new Date();
+  //   const currentMinutes = now.getHours()*60 + now.getMinutes();
+  //   const tasks = document.querySelectorAll("#sideChecklist label");
+  //   for(let i=0;i<tasks.length;i++){
+  //     const small = tasks[i].querySelector("small");
+  //     if(!small) continue;
+  //     const [startH,startM] = small.textContent.split("-")[0].trim().split(":").map(Number);
+  //     const [endH,endM] = small.textContent.split("-")[1].trim().split(":").map(Number);
+  //     const startMin = startH*60 + startM;
+  //     const endMin = endH*60 + endM;
+  //     if(currentMinutes >= startMin && currentMinutes < endMin){
+  //       return tasks[i].childNodes[1].textContent.trim(); // اسم المهمة
+  //     }
+  //   }
+  //   return "استمتع بيومك 🌙";
+  // }
+
+  // function updateClock(){
+  //   const now = new Date();
+  //   document.getElementById("clock").textContent = now.toLocaleTimeString();
+  //   document.getElementById("currentTask").textContent = getCurrentTask();
+  // }
+
+  function getCurrentTask(){
+    if(!tasks || tasks.length === 0) return "جاري التحميل... 🌙";
+
+    const now = new Date();
+    const currentMinutes = now.getHours()*60 + now.getMinutes();
+
+    for(let t of tasks){
+      let start = t.time.start;
+      let end = t.time.end;
+
+      // لو الوقت مجرد string (مثل المغرب من API)
+      if(typeof start === "string") start = start.split(" ")[0];
+      if(typeof end === "string") end = end.split(" ")[0];
+
+      const [sh,sm] = start.split(":").map(Number);
+      const [eh,em] = end.split(":").map(Number);
+
+      const startMin = sh*60 + sm;
+      const endMin = eh*60 + em;
+
+      if(currentMinutes >= startMin && currentMinutes < endMin){
+        return t.name;
+      }
+    }
+
+    return "استمتع بيومك 🌙";
+  }
+
+  function updateClock(){
+    const now = new Date();
+    document.getElementById("clock").textContent = now.toLocaleTimeString();
+
+    const current = getCurrentTask();
+    const currentTaskEl = document.getElementById("currentTask");
+    const isCurrentChanged = currentTaskEl.textContent != current;
+    currentTaskEl.textContent = current;
+
+    // if (isCurrentChanged){
+    //   highlightCurrentTask();
+    // }
+    // Highlight current task في الـ side menu
+    // document.querySelectorAll("#sideChecklist label").forEach(label=>{
+    //   // label.style.background = "none";
+    //   const checkbox = label.querySelector("input");
+    //   // const taskIndex = parseInt(checkbox.getAttribute("data-index"))
+    //   const taskIndex = checkbox.getAttribute("data-index");
+
+    //   let taskEntry = tasks.find(t => t.id === taskIndex);
+
+    //   //  label.innerHTML = `
+    //   //   <strong>${taskEntry}</strong><br>
+    //   // `;
+    //   // if (taskEntry.checked === true){
+    //   //   label.style.background = "rgba(255,215,0,0.09)";
+    //   // }
+    //   // // if(tasks[taskIndex] && tasks.name === current){
+    //   if(taskEntry.name === current){
+    //     label.style.background = "rgba(255,215,0,0.3)"; // لون ذهبي فاتح
+    //     // Optional: Scroll to current task
+    //     // label.innerHTML += `${current}`
+    //     // label.scrollIntoView({behavior:"smooth", block:"center"});
+    //   }
+    // });
+    
+
+  }
+  
+  // function addPages(){
+  //   const pages = parseInt(document.getElementById("pagesReadToday").value);
+  //   if(!pages || pages <= 0) return;
+
+  //   totalPagesRead += pages;
+  //   localStorage.setItem("totalPagesRead", totalPagesRead);
+
+  //   // حفظ يومي
+  //   const todayKey = new Date().toISOString().split("T")[0];
+  //   let weeklyData = JSON.parse(localStorage.getItem("weeklyQuran")) || {};
+  //   weeklyData[todayKey] = (weeklyData[todayKey] || 0) + pages;
+  //   localStorage.setItem("weeklyQuran", JSON.stringify(weeklyData));
+
+  //   updateQuranStats();
+  //   document.getElementById("pagesReadToday").value = "";
+  // }
+
+  function addPages(){
+
+    const pages = parseInt(document.getElementById("pagesReadToday").value);
+    if(!pages || pages <= 0) return;
+
+    currentPages += pages;
+
+    // لو وصلنا 604 صفحة
+    if(currentPages >= 604){
+
+      khatmaCount++;
+
+      // نبدأ ختمة جديدة
+      currentPages = currentPages - 604;
+      // currentPages = 0;
+
+
+      showKhatmaBadge();
+    }
+
+    localStorage.setItem("currentPages", currentPages);
+    localStorage.setItem("khatmaCount", khatmaCount);
+
+    updateQuranStats();
+    //pagesReadToday
+    document.getElementById("currentPages").value = "";
+  }
+
+  // function saveCheckbox(savedTasks){
+
+  //   // const todayKey = new Date().toISOString().split("T")[0];
+  //   let todayKey = formatDateKey(); 
+  //   let dailyTasks = JSON.parse(localStorage.getItem("dailyTasks")) || {};
+
+  //   if(!dailyTasks[todayKey]){
+  //     dailyTasks[todayKey] = [];
+  //   }
+
+  //   dailyTasks[todayKey].forEach((dailyTask,index)=>{
+  //     dailyTask.checked = savedTasks[index].checked
+  //     // [index] 
+  //     // || false
+  //     // dailyTask.checked = false
+  //   })
+
+  //   localStorage.setItem("dailyTasks", JSON.stringify(dailyTasks));
+  // }
+
+  function toggleTask(index){
+
+    // const todayKey = new Date().toISOString().split("T")[0];
+    let todayKey = formatDateKey(); 
+    let dailyTasks = JSON.parse(localStorage.getItem("dailyTasks")) || {};
+
+    const current = getCurrentTask()
+
+    if(!dailyTasks[todayKey]){
+      dailyTasks[todayKey] = [];
+    }
+        
+    // لو موجود بالفعل للـ index ده اليوم → نحدثه
+    let taskEntry = dailyTasks[todayKey].find(t => t.id === index);
+    if(taskEntry){
+      taskEntry.checked = !taskEntry.checked;
+    } else {
+      dailyTasks[todayKey].push({
+        id: index,
+        name: tasks[index].name,
+        checked: true
+      });
+    }
+
+    const labels = Array.from(sideMenu.querySelectorAll("label"));
+    const label = labels.find(t => t.dataset.id == index);
+
+    // if (taskEntry.checked === true && label) {
+    //     label.style.background = "rgba(255,215,0,0.09)";
+    // }
+    
+
+    if(taskEntry.name === current){
+        label.style.background = "rgba(255,215,0,0.3)"; // لون ذهبي فاتح
+        
+        // label.innerHTML += `${output}`
+          // Optional: Scroll to current task
+          // label.scrollIntoView({behavior:"smooth", block:"center"});
+      }else
+    if (taskEntry?.checked && label) {
+        // label.classList.add("task-checked");
+      label.style.background = "rgba(255,215,0,0.09)";
+    }else{
+      // label.classList.remove("task-checked");
+      label.style.background = "none";
+    }
+   
+    localStorage.setItem("dailyTasks", JSON.stringify(dailyTasks));
+  }
+
+  function renderTasks(){
+    const container = document.getElementById("sideChecklist");
+    container.innerHTML = "";
+
+    const current = getCurrentTask()
+    let output = ""
+      // if(task.name === document.getElementById("currentTask").textContent){
+      //     output += `<small>المهمة الحالية</small>`
+      //   }
+    output += `
+    <small>المهمة الحالية</small>
+    `;
+// deleteTasksFromPastDays(); // تنظيف المهام القديمة
+    // document.getElementById("currentTask").textContent = `${tasks.length} مهمة لليوم`;
+    tasks.forEach((task,index)=>{
+      // task.id = task.id || (Date.now() + index); // إضافة معرف فريد لكل مهمة  
+      const label = document.createElement("label");
+      label.className = "task-item";
+      label.draggable = true;
+      // label.dataset.index = index;
+      label.dataset.id = task.id;
+      // label.style.background = "none";
+
+      // label.innerHTML = `
+      //   <strong>${task.name}</strong><br>
+      //   <small>${task.time.start} - ${task.time.end}</small>
+      // `;
+
+      // label.innerHTML = `
+      //   <div class="task-name">${task.name}</div>
+      //   <div class="task-time">
+      //     ${task.time.start} - ${task.time.end}
+      //   </div>
+      // `;
+      label.innerHTML = `
+        <input type="checkbox" class="task" data-index="${task.id}" ${task.checked ? "checked" : ""}  /> ${task.name} <br>
+        <small>${task.time?.start || ""} - ${task.time?.end || ""}</small>
+      `;
+
+      if(task.name === current){
+        label.style.background = "rgba(255,215,0,0.3)"; // لون ذهبي فاتح
+        
+        label.innerHTML += `${output}`
+          // Optional: Scroll to current task
+          // label.scrollIntoView({behavior:"smooth", block:"center"});
+      }else
+      if (task.checked) {
+        // label.classList.add("task-checked");
+        label.style.background = "rgba(255,215,0,0.09)";
+
+      }else{
+        label.style.background = "none";
+        // label.innerHTML += `${task.checked}`
+      }
+
+      
+
+    //   if (task.name === current){
+    //     label.style.background = "rgba(255,215,0,0.3)"; // لون ذهبي فاتح
+        
+    //     label.innerHTML += `${output}`
+    // //     // Optional: Scroll to current task
+    // //     // label.scrollIntoView({behavior:"smooth", block:"center"});
+    //   }
+
+      
+      container.appendChild(label);
+      const checkbox = label.querySelector("input");
+      checkbox.addEventListener("change",()=>toggleTask(task.id));
+    });
+
+    // load saved checkboxes
+    // const savedTasks = JSON.parse(localStorage.getItem("saved_Tasks")) || [];
+    let dailyTasks = JSON.parse(localStorage.getItem("dailyTasks")) || {};
+    // const taskEntry = dailyTasks[formatDateKey()].find(t => t.id === i),taskEntry.checked = taskEntry.checked||false,
+    // const savedTasks = JSON.parse("[]");
+    
+
+    
+    document.querySelectorAll(".task").forEach((t,i)=> t.checked = dailyTasks[formatDateKey()][i].checked||false);
+
+    // attach event listener
+    document.querySelectorAll(".task").forEach(t=>t.addEventListener("change", updateProgress));
+    updateProgress();
+  }
+
+  function highlightCurrentTask() {
+
+    // const now = getCurrentTimeString(); // لازم ترجع الوقت بصيغة HH:MM
+
+    const current = getCurrentTask()
+    let output = ""
+      // if(task.name === document.getElementById("currentTask").textContent){
+      //     output += `<small>المهمة الحالية</small>`
+      //   }
+      output += `
+      <small>المهمة الحالية</small>
+      `;
+    // document.querySelectorAll(".task-item").forEach(item => {
+
+    //   const task = tasks.find(t => t.id == item.dataset.id);
+
+    //   // if (now >= task.time.start && now < task.time.end) {
+    //   if (task.name === current) {
+    //     // item.classList.add("active-task");
+    //     item.style.background = "rgba(255,215,0,0.3)"; // لون ذهبي فاتح
+    //     item.innerHTML += `${output}`
+    //     // Optional: Scroll to current task
+    //     // item.scrollIntoView({behavior:"smooth", block:"center"});
+    //   } else {
+    //     // item.classList.remove("active-task");
+    //     // item.style.background = "none"; // لون ذهبي فاتح
+    //     item.innerHTML += ``
+    //   }
+    // });
+    
+    // Highlight current task في الـ side menu
+
+    const container = document.getElementById("sideChecklist");
+    const labels = Array.from(container.querySelectorAll("label"));
+    
+    const taskEntry = tasks.find(t => t.name == current);
+    const label = labels.find(t => t.dataset.id == taskEntry.id);
+
+    if (!taskEntry) return;
+    if(taskEntry.name === current){
+        label.style.background = "rgba(255,215,0,0.3)"; // لون ذهبي فاتح
+        
+        // label.innerHTML += `${output}`
+        // Optional: Scroll to current task
+        // label.scrollIntoView({behavior:"smooth", block:"center"});
+    }
+    // else if (taskEntry.checked) {
+    //     // label.classList.add("task-checked");
+    //     label.style.background = "rgba(255,215,0,0.09)";
+    // }else{
+    //     label.style.background = "none";
+    // }
+
+    
+    
+    // sideMenu.querySelectorAll("label").forEach(label => {
+
+      // const checkbox = label.querySelector("input");
+      // if (!checkbox) return;
+
+      // // const taskIndex = checkbox.dataset.index;
+      // const taskIndex = checkbox.getAttribute("data-index");
+      // const taskEntry = tasks.find(t => t.id === taskIndex);
+
+      // if (!taskEntry) return;
+      // if(taskEntry.name === current){
+      //     label.style.background = "rgba(255,215,0,0.3)"; // لون ذهبي فاتح
+          
+      //     label.innerHTML += `${output}`
+      //     // Optional: Scroll to current task
+      //     // label.scrollIntoView({behavior:"smooth", block:"center"});
+      //   }else if (taskEntry.checked) {
+      //     // label.classList.add("task-checked");
+      //     label.style.background = "rgba(255,215,0,0.09)";
+      //   }else{
+      //     label.style.background = "none";
+      //   }
+      
+    // });
+    // document.querySelectorAll("label").forEach(label=>{
+    //   // label.style.background = "none";
+    //   const checkbox = label.querySelector("input");
+    //   // const taskIndex = parseInt(checkbox.getAttribute("data-index"))
+    //   const taskIndex = checkbox.getAttribute("data-index");
+
+    //   let taskEntry = tasks.find(t => t.id === taskIndex);
+
+    //   // const taskIndex = Number(checkbox.getAttribute("data-index"));
+    //   // let taskEntry = tasks.find(t => t.id === taskIndex);
+
+    //   //  label.innerHTML = `
+    //   //   <strong>${taskEntry}</strong><br>
+    //   // `;
+    //   // if (taskEntry.checked === true){
+    //   //   label.style.background = "rgba(255,215,0,0.09)";
+    //   // }
+    //   // // if(tasks[taskIndex] && tasks.name === current){
+    //   if(taskEntry.name === current){
+    //     label.style.background = "rgba(255,215,0,0.3)"; // لون ذهبي فاتح
+        
+    //     label.innerHTML += `${output}`
+    //     // Optional: Scroll to current task
+    //     // label.scrollIntoView({behavior:"smooth", block:"center"});
+    //   }else if (taskEntry.checked) {
+    //     // label.classList.add("task-checked");
+    //     label.style.background = "rgba(255,215,0,0.09)";
+    //   }else{
+    //     label.style.background = "none";
+    //   }
+
+      
+    // });
+  
+  }
+
+  // function enableDrag(){
+  //   const items = document.querySelectorAll(".task-item");
+
+  //   items.forEach(item=>{
+  //     item.addEventListener("dragstart", ()=>{
+  //       item.classList.add("dragging");
+  //     });
+
+  //     item.addEventListener("dragend", ()=>{
+  //       item.classList.remove("dragging");
+  //       updateOrder();
+  //     });
+  //   });
+    
+  //   const container = document.getElementById("sideChecklist");
+
+  //   container.addEventListener("dragover", e=>{
+  //     e.preventDefault();
+  //     const dragging = document.querySelector(".dragging");
+  //     const afterElement = getDragAfterElement(container, e.clientY);
+
+  //     if(afterElement == null){
+  //       container.appendChild(dragging);
+  //     } else {
+  //       container.insertBefore(dragging, afterElement);
+  //     }
+  //   });
+  // }
+
+  // function getDragAfterElement(container, y){
+  //     const elements = [...container.querySelectorAll(".task-item:not(.dragging)")];
+
+  //     return elements.reduce((closest, child)=>{
+  //       const box = child.getBoundingClientRect();
+  //       const offset = y - box.top - box.height / 2;
+
+  //       if(offset < 0 && offset > closest.offset){
+  //         return { offset: offset, element: child };
+  //       } else {
+  //         return closest;
+  //       }
+  //     }, { offset: Number.NEGATIVE_INFINITY }).element;
+  //   }
+
+    function getDragAfterElement(container, y) {
+    const draggableElements = [
+      ...container.querySelectorAll(".task-item:not(.dragging)")
+    ];
+
+    let closest = null;
+    let closestOffset = Number.NEGATIVE_INFINITY;
+
+    draggableElements.forEach(child => {
+      const box = child.getBoundingClientRect();
+      const offset = y - (box.top + box.height / 2);
+
+      if (offset < 0 && offset > closestOffset) {
+        closestOffset = offset;
+        closest = child;
+      }
+    });
+
+    return closest;
+  }
+
+  function updateOrder(){
+
+   // document.querySelectorAll(".task-item").forEach(item=> item.classList.remove("dragging"));
+// document.querySelectorAll(".task-item").forEach(item=> item.style.transition = "none");
+
+    const container = document.getElementById("sideChecklist");
+    const items = container.querySelectorAll(".task-item");
+
+    // const items = document.querySelectorAll(".task-item");
+    let newTasks = [];
+
+    items.forEach(item => {
+
+      const id = item.dataset.id;
+
+      const task = tasks.find(t => t.id == id);
+
+      if(task){
+        newTasks.push(task);
+      }
+
+    });
+
+    if(newTasks.length === tasks.length){
+      tasks = newTasks;
+    } else {
+      console.warn("Order mismatch detected");
+    }
+
+    recalculateTimes();
+    renderTasks();
+    enableInteractions();
+  }
+
+  function recalculateTimes(){
+    let currentStart = prayerTimesToday.Maghrib;
+
+    tasks.forEach((task,i)=>{
+      time = task.time?.start || currentStart;
+      // time = currentStart;
+      const duration = task.duration || 30;
+      task.time = {
+          start: time,
+          end: addMinutes(time, duration)
+        };
+      // if(i === 0){
+      //   task.time = {
+      //     start: currentStart,
+      //     end: addMinutes(currentStart,15)
+      //   };
+      // } else {
+      //   task.time = {
+      //     start: currentStart,
+      //     end: addMinutes(currentStart, duration)
+      //   };
+      // }
+      currentStart = task.time.end;
+    });
+  }
+
+  // function enableSwipe(){
+  //   let startX = 0;
+
+  //   document.querySelectorAll(".task-item").forEach((item,index)=>{
+  //     item.addEventListener("touchstart",e=>{
+  //       startX = e.touches[0].clientX;
+  //     });
+
+  //     item.addEventListener("touchend",e=>{
+  //       const endX = e.changedTouches[0].clientX;
+  //       const diff = endX - startX;
+
+  //       if(diff > 80){
+  //         editTaskTime(index);
+  //       }
+
+  //       if(diff < -80){
+  //         deleteTask(index);
+  //       }
+  //     });
+  //   });
+  // }
+
+  function enableSwipe(){
+
+    const container = document.getElementById("sideChecklist");
+
+    let startY = 0;
+    let currentItem = null;
+    let isDragging = false;
+
+    // if(!container.classList.contains("show")) return;
+    container.addEventListener("pointerdown", (e)=>{
+      console.log("Pointer Down");
+      document.getElementById("currentTask").textContent = "Pointer Down";
+      const item = e.target.closest(".task-item");
+      if(!item) return;
+
+      currentItem = item;
+      startY = e.clientY;
+      isDragging = true;
+
+      currentItem.style.transition = "none";
+      currentItem.setPointerCapture(e.pointerId);  // 🔥 دي أهم سطر
+    });
+
+    container.addEventListener("pointermove", (e)=>{
+      if(!isDragging || !currentItem) return;
+
+      console.log("Pointer Move");
+      
+      const diff = e.clientY - startY;
+      // document.getElementById("currentTask").textContent = "Pointer Move: " + e.clientY + " - " + startY + " = " + diff;
+      currentItem.style.transform = `translateY(${diff}px)`;
+
+      // خلفية أثناء السحب
+      if(diff > 0){
+        currentItem.style.background = "#1f6f3e"; // أخضر
+        // currentItem.style.transform = "translateX(100%)";
+        // setTimeout(()=> editTaskTime(index, diff), 0);
+        // editTaskTime(index, diff);
+        
+      } else {
+        currentItem.style.background = "#7a1f1f"; // أحمر
+        // currentItem.style.transform = "translateX(-100%)";
+        // setTimeout(()=> deleteTask(index), 200);
+      }
+    });
+
+    
+    container.addEventListener("pointerup", (e)=>{
+      if(!currentItem) return;
+  
+      console.log("Pointer Up");
+      document.getElementById("currentTask").textContent = "Pointer Up";
+      currentItem.releasePointerCapture(e.pointerId); // 🔥 مهم جدًا
+      const diff = e.clientY - startY;
+      const index = [...container.children].indexOf(currentItem);
+
+      currentItem.style.transition = "0.3s";
+
+      // if(diff > 60){
+      //   // editTaskTime(index); // swipe right
+      //   currentItem.style.transform = "translateX(100%)";
+      //   setTimeout(()=> editTaskTime(index, diff), 200);
+      // }
+      // else if(diff < -60){
+      //   // deleteTask(index);   // swipe left
+      //   currentItem.style.transform = "translateX(-100%)";
+      //   setTimeout(()=> deleteTask(index), 200);
+      // }
+
+      e.preventDefault();
+      // const dragging = document.querySelector(".dragging");
+      const afterElement = getDragAfterElement(container, e.clientY);
+
+      if(afterElement == null){
+        container.appendChild(currentItem);
+      } else {
+        container.insertBefore(currentItem, afterElement);
+      }
+
+      // container.addEventListener("dragover", e=>{
+      //   e.preventDefault();
+      //   const dragging = document.querySelector(".dragging");
+      //   const afterElement = getDragAfterElement(container, e.clientY);
+
+      //   if(afterElement == null){
+      //     container.appendChild(dragging);
+      //   } else {
+      //     container.insertBefore(dragging, afterElement);
+      //   }
+      // });
+
+      // if(diff > 60){
+      //   currentItem.style.transform = "translateX(100%)";
+      //   setTimeout(()=> editTaskTime(index), 200);
+      // }
+      // else if(diff < -60){
+      //   currentItem.style.transform = "translateX(-100%)";
+      //   setTimeout(()=> deleteTask(index), 200);
+      // }
+
+      // رجوع طبيعي
+      currentItem.style.transform = "translateX(0)";
+      currentItem.style.background = "#2e2e50";
+
+      isDragging = false;
+      currentItem = null;
+    });
+
+    container.addEventListener("pointercancel", ()=>{
+      isDragging = false;
+      if(currentItem){
+        currentItem.style.transform = "translateX(0)";
+        currentItem = null;
+        // new Error("Pointer Cancelled").message = "Pointer Cancelled";
+        // updateOrder();
+        setTimeout(() => {
+          updateOrder();
+        }, 0);
+      }
+    });
+    
+  }
+
+  function enableInteractions() {
+
+    const container = document.getElementById("sideChecklist");
+    const items = document.querySelectorAll(".task-item");
+
+    items.forEach(item => {
+
+      let startX = 0;
+      let startY = 0;
+      let currentX = 0;
+      let currentY = 0;
+      let isDragging = false;
+      let isSwiping = false;
+
+      item.addEventListener("pointerdown", (e) => {
+
+        if(e.target.tagName === "INPUT") return;
+        
+        startX = e.clientX;
+        startY = e.clientY;
+
+        item.setPointerCapture(e.pointerId);
+
+        currentX = 0;
+        currentY = 0;
+
+        item.style.transition = "none";
+
+      });
+
+      item.addEventListener("pointermove", (e) => {
+
+        if (startX === 0 && startY === 0) return;
+
+        currentX = e.clientX - startX;
+        currentY = e.clientY - startY;
+
+        // تحديد الاتجاه
+        if (!isDragging && !isSwiping) {
+
+          if (Math.abs(currentX) > 8 && Math.abs(currentX) > Math.abs(currentY)) {
+            isSwiping = true;
+          }
+
+          if (Math.abs(currentY) > 8 && Math.abs(currentY) > Math.abs(currentX)) {
+            isDragging = true;
+            item.classList.add("dragging");
+          }
+        }
+
+        if (isSwiping) {
+          item.style.transform = `translateX(${currentX}px)`;
+        }
+
+        if (isDragging) {
+          item.style.transform = `translateY(${currentY}px)`;
+
+          const afterElement = getDragAfterElement(container, e.clientY);
+          if (afterElement == null) {
+            container.appendChild(item);
+          } else {
+            container.insertBefore(item, afterElement);
+          }
+        }
+
+      });
+
+      item.addEventListener("pointerup", (e) => {
+
+        item.releasePointerCapture(e.pointerId);
+
+        item.style.transition = "transform 0.2s ease";
+
+        // Swipe Actions
+        if (isSwiping) {
+          if (currentX > 60) {
+            editTask(item.dataset.id);
+          } else if (currentX < -60) {
+            deleteTask(item.dataset.id);
+          }
+        }
+
+        // Drag Action
+        if (isDragging) {
+          updateOrder();
+        }
+
+        // Reset
+        item.style.transform = "";
+        item.classList.remove("dragging");
+
+        startX = 0;
+        startY = 0;
+        isDragging = false;
+        isSwiping = false;
+      });
+
+    });
+  }
+
+  function deleteTask(id){
+    // tasks.splice(index,1);
+    tasks = tasks.filter(t => t.id != id);
+    recalculateTimes();
+    renderTasks();
+    // enableSwipe();
+    // enableInteractions();
+  }
+
+  function editTaskTime(id,diff=15){
+    alert("Edit Task: " + tasks.find(t => t.id == id).name + " by " + diff + " minutes\n(هنا ممكن تفتح نافذة لتعديل الوقت أو التفاصيل)");
+    // document.getElementById("currentTask").textContent = "Edit Task: " + tasks[index].name;
+    const task = tasks.find(t => t.id == id);
+    const newDuration = prompt("Duration in minutes?");
+    if(newDuration){
+      task.duration = Number(newDuration);
+
+      recalculateTimes();
+      renderTasks();
+      // enableSwipe();
+      // enableInteractions();
+    }
+  }
+  // function enableSwipe(){
+
+  //   const container = document.getElementById("sideChecklist");
+
+  //   let startX = 0;
+  //   let currentItem = null;
+
+  //   container.addEventListener("touch-start",(e)=>{
+  //     console.log("touch started");
+  //     document.getElementById("currentTask").textContent = "touch started";
+  //     const item = e.target.closest(".task-item");
+  //     if(!item) return;
+
+  //     currentItem = item;
+  //     startX = e.touches[0].clientX;
+  //   },{passive:true});
+
+  //   container.addEventListener("touchmove",(e)=>{
+  //     console.log("touch moved");
+  //     if(!currentItem) return;
+
+  //     document.getElementById("currentTask").textContent = "touch moved";
+  //     const moveX = e.touches[0].clientX;
+  //     const diff = moveX - startX;
+
+  //     // نتحرك بس لو أفقي أكتر من رأسي
+  //     if(Math.abs(diff) > 10){
+  //       currentItem.style.transform = `translateX(${diff}px)`;
+  //     }
+
+  //   },{passive:true});
+
+  //   container.addEventListener("touch-end",(e)=>{
+  //     console.log("touch ended");
+  //     if(!currentItem) return;
+  //     document.getElementById("currentTask").textContent = "touch ended";
+  //     const endX = e.changedTouches[0].clientX;
+  //     const diff = endX - startX;
+
+  //     const index = [...container.children].indexOf(currentItem);
+
+  //     currentItem.style.transition = "0.3s";
+
+  //     if(diff > 120){
+  //       editTaskTime(index);
+  //     }
+  //     else if(diff < -120){
+  //       deleteTask(index);
+  //     }
+
+  //     currentItem.style.transform = "translateX(0)";
+  //     currentItem = null;
+
+  //     if (diff > 0) {
+  //       console.log("Swiped Right");
+  //       closeMenu(); // غيرها باللي عندك
+  //     } else {
+  //       console.log("Swiped Left");
+  //       openMenu(); // غيرها باللي عندك
+  //     }
+
+  //   });
+    
+  // }
+
+  // function enableSwipe(){
+
+  //   const container = document.getElementById("sideChecklist");
+
+  //   let startX = 0;
+  //   let currentItem = null;
+
+  //   container.addEventListener("touchstart",(e)=>{
+  //     const item = e.target.closest(".task-item");
+  //     if(!item) return;
+
+  //     currentItem = item;
+  //     startX = e.touches[0].clientX;
+  //   });
+
+  //   container.addEventListener("touchmove",(e)=>{
+  //     if(!currentItem) return;
+
+  //     const moveX = e.touches[0].clientX;
+  //     const diff = moveX - startX;
+
+  //     currentItem.style.transform = `translateX(${diff}px)`;
+  //   });
+
+  //   container.addEventListener("touchend",(e)=>{
+  //     if(!currentItem) return;
+
+  //     const endX = e.changedTouches[0].clientX;
+  //     const diff = endX - startX;
+  //     const index = [...container.children].indexOf(currentItem);
+
+  //     currentItem.style.transition = "0.3s";
+
+  //     if(diff > 100){
+  //       // Swipe Right → تعديل
+  //       editTaskTime(index);
+  //     }
+  //     else if(diff < -100){
+  //       // Swipe Left → حذف
+  //       deleteTask(index);
+  //     }
+
+  //     // رجع العنصر مكانه
+  //     currentItem.style.transform = "translateX(0)";
+  //     currentItem = null;
+  //   });
+  // }
+  
+  // function showKhatmaBadge(){
+  //   const badge = document.getElementById("khatmaBadge");
+  //   badge.textContent = `ختمة ${khatmaCount}`;
+  //   badge.style.display = "block";
+
+  //   setTimeout(()=>{
+  //     badge.style.opacity = "0";
+  //     setTimeout(()=> badge.style.display = "none", 500);
+  //   }, 3000);
+  // }
+  
+  function formatDateKey(date = new Date()) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+
+      return `${year}-${month}-${day}`;
+    }
+  function getDefaultTasks() {
+    // return {
+    //   maghrib: createTask("maghrib", "صلاة المغرب", prayerTimesToday.Maghrib.start, 20),
+    //   iftar: createTask("iftar", "إفطار", prayerTimesToday.Iftar.start, 30),
+    //   quran: createTask("quran", "قراءة القرآن", prayerTimesToday.Quran.start, 60),
+    //   fajr: createTask("fajr", "صلاة الفجر", prayerTimesToday.Fajr.start, 30),
+    // }; 
+    // {
+
+    //     maghrib: createTask("maghrib", "صلاة المغرب", prayerTimesToday.Maghrib.start, 20),
+
+    //     iftar: createTask("iftar", "إفطار", prayerTimesToday.Iftar.start, 30),
+
+    //     restAfterIftar: createTask("restAfterIftar", "اشرب شاى / راحة بعد الإفطار", prayerTimesToday.RestAfterIftar.start, 15),
+
+    //     isha: createTask("isha", "صلاة العشاء و التراويح", prayerTimesToday.Isha.start, 90),
+
+    //     quran: createTask("quran", "قراءة قرآن", prayerTimesToday.Quran.start, 60),
+
+    //     gym: createTask("gym", "اتمرن / استراحة", prayerTimesToday.Gym.start, 60),
+
+    //     family: createTask("family", "قضاء وقت مع العائلة", prayerTimesToday.Family.start, 60),
+
+    //     rest: createTask("rest", "راحة / نوم", prayerTimesToday.Rest.start, 120),
+
+    //     suhoor: createTask("suhoor", "سحور / تجهيز اليوم", prayerTimesToday.Suhoor.start, 60),
+
+    //     fajr: createTask("fajr", "صلاة الفجر", prayerTimesToday.Fajr.start, 30),
+
+    //     sleep: createTask("sleep", "نوم", prayerTimesToday.Sleep.start, 300),
+
+    //     work1: createTask("work1", "شغل / أعمال", prayerTimesToday.Work1.start, 75),
+
+    //     dhuhr: createTask("dhuhr", "صلاة الظهر", prayerTimesToday.Dhuhr.start, 20),
+
+    //     work2: createTask("work2", "شغل / مهام", prayerTimesToday.Work2.start, 165),
+
+    //     asr: createTask("asr", "صلاة العصر", prayerTimesToday.Asr.start, 20),
+
+    //     work3: createTask("work3", "عمل/دراسة", prayerTimesToday.Work3.start, 90)
+
+    //   };
+
+      const defaultTasks = [
+        // {name: "url", time: url},
+        createTask("صلاة المغرب", prayerTimesToday.Maghrib.start, 20),
+        createTask("إفطار", prayerTimesToday.Iftar.start, 30),
+        createTask("اشرب شاى / راحة بعد الإفطار", prayerTimesToday.RestAfterIftar.start, 15),
+        createTask("صلاة العشاء و التراويح", prayerTimesToday.Isha.start, 90),
+        createTask("قضاء وقت مع العائلة", prayerTimesToday.Family.start, 60), // صفحات إضافية
+        // { name: "تمرن / استراحة", time: {start:"20:30", end:"21:30"}, checked: false },
+        createTask("اتمرن / استراحة", prayerTimesToday.Gym.start, 60),
+        // { name: "قراءة قرآن / عيلة", time: {start:"22:00", end:"23:00"}, checked: false , pages: 0 }, // صفحات إضافية
+        createTask("قراءة القرآن", prayerTimesToday.Quran.start, 60), // صفحات إضافية
+        
+        // { name: "راحة / نوم", time: {start:prayerTimesToday.Sleep, end:"03:00"}, checked: false },
+        createTask("راحة / نوم", prayerTimesToday.Rest.start, 120),
+        // { name: "سحور / تجهيز اليوم", time: {start:"03:30", end:"05:00"}, checked: false },
+        createTask("سحور / تجهيز اليوم", prayerTimesToday.Suhoor.start, 60),
+        createTask("صلاة الفجر", prayerTimesToday.Fajr.start, 30),
+        // { name: "راحة / نوم", time: {start:"23:00", end:"03:30"}, checked: false },
+        createTask("نوم", prayerTimesToday.Sleep.start, 300), // 5.5 ساعات
+  // prayerTimesToday.Fajr, // تأكد أن الفجر هو الأول في القائمة
+        // { name: "شغل / أعمال", time: {start:"11:00", end:"17:00"}, checked: false },
+        // createTask("شغل / أعمال", prayerTimesToday.Work1.start, 0, "144"),
+        createTask("شغل / أعمال", prayerTimesToday.Work1.start, 75),
+        createTask("صلاة الظهر", prayerTimesToday.Dhuhr.start, 20),
+        
+        // { name: "شغل / مهام", time: {start:"13:30", end:"17:00"}, checked: false },
+        createTask("شغل / مهام", prayerTimesToday.Work2.start, 165),
+        createTask("صلاة العصر", prayerTimesToday.Asr.start, 20),
+        // { name: "شغل / مهام", time: {start:"13:30", end:"17:00"}, checked: false },
+        createTask("عمل/دراسة", prayerTimesToday.Work3.start, 90),
+        // ,
+        // {name:addMinutes( prayerTimesToday.Maghrib, 20) + " - قراءة قرآن", time: {start:addMinutes( prayerTimesToday.Maghrib, 20), end:addMinutes( prayerTimesToday.Maghrib, 50)}, checked: false, pages: 0}
+      ];
+
+      return defaultTasks
+      
+  }
+
+  function generateTasks() {
+
+    // let todayKey = "tasks-" + new Date().toDateString();
+    // let todayKey = new Date().toISOString().split("T")[0];
+    // let todayKey = new Date().toDateString().split("T")[0];
+    let todayKey = formatDateKey(); 
+    // let tomorrowKey = formatDateKey(new Date(Date.now() + 86400000));
+    // document.getElementById("currentTask").textContent = todayKey;
+    // alert("Error generating PDF "+todayKey);
+    let dailyTasks = JSON.parse(localStorage.getItem("dailyTasks")) || {};
+    // const dailyTasks = {};
+    if(!dailyTasks[todayKey]){
+      dailyTasks[todayKey] = [];
+    // // if (dailyTasks){
+    //   // dailyTasks[todayKey] = dailyTasks[todayKey] || [];
+    // // }
+    }
+    
+    let defaultTasks = getDefaultTasks();
+
+    // if (!dailyTasks[todayKey]) {
+    //   dailyTasks[todayKey] = defaultTasks;
+    // } else {
+    //   // merge لو أضفت مهمة جديدة
+    //   Object.keys(defaultTasks).forEach(key => {
+    //     if (!dailyTasks[todayKey][key]) {
+    //       dailyTasks[todayKey][key] = defaultTasks[key];
+    //     }
+    //   });
+    // }
+
+    // localStorage.setItem("dailyTasks", JSON.stringify(dailyTasks));
+
+    // 👇 merge logic
+    defaultTasks.forEach(defaultTask => {
+      let exists = dailyTasks[todayKey].some(
+        savedTask => savedTask.name === defaultTask.name
+      );
+      // document.getElementById("currentTask").textContent = todayKey;
+      if (!exists) {
+        dailyTasks[todayKey].push(defaultTask);
+      }
+    });
+
+    // // localStorage.setItem(todayKey, JSON.stringify(dailyTasks));
+    localStorage.setItem("dailyTasks", JSON.stringify(dailyTasks));
+    
+
+
+
+    
+    tasks = dailyTasks[todayKey];
+    // tasks = getDefaultTasks();
+    // tasks = []
+    // tasks = defaultTasks;
+  }
+
+  // function toggleTask(index){
+
+  //   const todayKey = new Date().toISOString().split("T")[0];
+  //   let dailyTasks = JSON.parse(localStorage.getItem("dailyTasks")) || {};
+
+  //   if(!dailyTasks[todayKey]){
+  //     dailyTasks[todayKey] = [];
+  //   }
+
+  //   // لو موجود بالفعل للـ index ده اليوم → نحدثه
+  //   let taskEntry = dailyTasks[todayKey].find(t => t.id === index);
+  //   if(taskEntry){
+  //     taskEntry.checked = !taskEntry.checked;
+  //   } else {
+  //     dailyTasks[todayKey].push({
+  //       id: index,
+  //       name: tasks[index].name,
+  //       checked: true
+  //     });
+  //   }
+
+  //   localStorage.setItem("dailyTasks", JSON.stringify(dailyTasks));
+  // }
+//   function generateTasks(){
+//     // return [
+//     //   { name: "صلاة المغرب", time: prayerTimesToday.Maghrib, duration: 15 },
+//     //   { name: "إفطار", time: null, duration: 60 },
+//     //   { name: "راحة", time: null, duration: 30 },
+//     //   { name: "صلاة العشاء", time: null, duration: 15 },
+//     //   { name: "قراءة قرآن", time: null, duration: 60 },
+//     //   { name: "رياضة", time: null, duration: 40 },
+//     //   { name: "قضاء وقت مع العائلة", time: null, duration: 60 },
+//     //   { name: "راحة", time: null, duration: 360 },
+//     //   { name: "سحور", time: null, duration: 90 },
+//     //   { name: "صلاة الفجر", time: null, duration: 20 },
+//     //   { name: "نوم", time: null, duration: 300 },
+//     //   { name: "عمل/دراسة", time: null, duration: 360 },
+//     // ];
+
+//     // let todayKey = "tasks-" + new Date().toDateString();
+//     // let savedTasks = JSON.parse(localStorage.getItem(todayKey)) || [];
+
+//     const todayKey = new Date().toISOString().split("T")[0];
+//     let dailyTasks = JSON.parse(localStorage.getItem("dailyTasks")) || {};
+//     // let defaultTasks = [
+//     //   createTask("صلاة المغرب", prayerTimesToday.Maghrib.start, 20),
+//     //   createTask("إفطار", prayerTimesToday.Iftar.start, 30),
+//     //   createTask("صلاة الفجر", prayerTimesToday.Fajr.start, 30),
+//     //   createTask("صلاة الظهر", prayerTimesToday.Dhuhr.start, 20),
+//     // ];
+
+//     defaultTasks = [
+//       // {name: "url", time: url},
+//       createTask("صلاة المغرب", prayerTimesToday.Maghrib.start, 20),
+//       createTask("إفطار", prayerTimesToday.Iftar.start, 30),
+//       createTask("اشرب شاى / راحة بعد الإفطار", prayerTimesToday.RestAfterIftar.start, 15),
+//       createTask("صلاة العشاء و التراويح", prayerTimesToday.Isha.start, 90),
+//       // { name: "قراءة قرآن / عيلة", time: {start:"22:00", end:"23:00"}, checked: false , pages: 0 }, // صفحات إضافية
+//       createTask("قراءة قرآن", prayerTimesToday.Quran.start, 60), // صفحات إضافية
+//       // { name: "تمرن / استراحة", time: {start:"20:30", end:"21:30"}, checked: false },
+//       createTask("اتمرن / استراحة", prayerTimesToday.Gym.start, 60),
+//       createTask("قضاء وقت مع العائلة", prayerTimesToday.Family.start, 60), // صفحات إضافية
+      
+//       // { name: "راحة / نوم", time: {start:prayerTimesToday.Sleep, end:"03:00"}, checked: false },
+//       createTask("راحة / نوم", prayerTimesToday.Rest.start, 120),
+//       // { name: "سحور / تجهيز اليوم", time: {start:"03:30", end:"05:00"}, checked: false },
+//       createTask("سحور / تجهيز اليوم", prayerTimesToday.Suhoor.start, 60),
+//       createTask("صلاة الفجر", prayerTimesToday.Fajr.start, 30),
+//       // { name: "راحة / نوم", time: {start:"23:00", end:"03:30"}, checked: false },
+//       createTask("نوم", prayerTimesToday.Sleep.start, 300), // 5.5 ساعات
+// // prayerTimesToday.Fajr, // تأكد أن الفجر هو الأول في القائمة
+//       // { name: "شغل / أعمال", time: {start:"11:00", end:"17:00"}, checked: false },
+//       // createTask("شغل / أعمال", prayerTimesToday.Work1.start, 0, "144"),
+//       createTask("شغل / أعمال", prayerTimesToday.Work1.start, 75),
+//       createTask("صلاة الظهر", prayerTimesToday.Dhuhr.start, 20),
+      
+//       // { name: "شغل / مهام", time: {start:"13:30", end:"17:00"}, checked: false },
+//       createTask("شغل / مهام", prayerTimesToday.Work2.start, 165),
+//       createTask("صلاة العصر", prayerTimesToday.Asr.start, 20),
+//       // { name: "شغل / مهام", time: {start:"13:30", end:"17:00"}, checked: false },
+//       createTask("عمل/دراسة", prayerTimesToday.Work3.start, 90),
+//       // ,
+//       // {name:addMinutes( prayerTimesToday.Maghrib, 20) + " - قراءة قرآن", time: {start:addMinutes( prayerTimesToday.Maghrib, 20), end:addMinutes( prayerTimesToday.Maghrib, 50)}, checked: false, pages: 0}
+//     ];
+    
+
+//     // 👇 merge logic
+//     defaultTasks.forEach(defaultTask => {
+//       let exists = savedTasks.some(
+//         savedTask => savedTask.name === defaultTask.name
+//       );
+
+//       if (!exists) {
+//         savedTasks.push(defaultTask);
+//       }
+//     });
+
+//     localStorage.setItem(todayKey, JSON.stringify(savedTasks));
+
+//     return savedTasks;
+
+//     // tasks.forEach((task,i)=>{
+//     //   if(!task.id){
+//     //     task.id = Date.now() + i;
+//     //   }
+//     // });
+//   }
+
+  document.addEventListener("DOMContentLoaded", async function(){
+
+    // Fetch prayer times then generate menu
+    fetchPrayerTimes().then(times=>{
+      if(times){
+        prayerTimesToday = times;
+      } else {
+        prayerTimesToday = {
+          
+          Maghrib: { start: "19:10", end: "19:30" },
+          Iftar: { start: addMinutes(cleanTime(timings.Maghrib), 30), end: addMinutes(cleanTime(timings.Maghrib), 60) },
+          RestAfterIftar: { start: addMinutes(cleanTime(timings.Maghrib), 60), end: addMinutes(cleanTime(timings.Maghrib), 75) },
+          Isha: { start: "20:30", end: "21:00" },
+          Family: { start: addMinutes(cleanTime(timings.Isha), 90), end: addMinutes(cleanTime(timings.Isha), 150) },
+          Gym: { start: addMinutes(cleanTime(timings.Isha), 170), end: addMinutes(cleanTime(timings.Isha), 210) },
+          Quran: { start: addMinutes(cleanTime(timings.Isha), 240), end: addMinutes(cleanTime(timings.Isha), 300) },
+          
+          // Rest: addHours(cleanTime(timings.Isha), 6),
+          Rest: { start: Isha.start, end: "03:30" },
+          // Suhoor: { start: addHours(cleanTime(timings.Fajr), -2), end: cleanTime(timings.Fajr) },
+          Suhoor: { start: "03:30", end: cleanTime(timings.Fajr) },
+          Fajr: { start: "05:10", end: "05:30" },
+          Sleep: { start: addMinutes(cleanTime(timings.Fajr), 30), end: "10:30" },
+          Work1: { start: "11:00", end: "17:00" },
+          Dhuhr: { start: "12:45", end: "13:15" },
+          // Work2: { start: "13:30", end: "17:00" },
+          Work2: { start: addMinutes(cleanTime(timings.Dhuhr), 20), end: cleanTime(timings.Asr) },
+          Asr: { start: "17:00", end: "17:30" },
+          // Work3: { start: "13:30", end: "17:00" }
+          Work3: { start: addMinutes(cleanTime(timings.Asr), 30), end: "17:00" },
+        };
+      } 
+      
+      generateTasks();
+      // generateSideMenu();
+      recalculateTimes();
+      renderTasks();
+      // enableSwipe();
+      // enableInteractions();
+      updateClock();
+      setInterval(updateClock,1000);
+      // highlightCurrentTask()
+      // sideChecklist.style.display = "block"; // إظهار القائمة بعد التحميل 
+    });
+
+    requestNotification();
+    setInterval(()=>{
+      const now = new Date();
+      if(now.getHours() === 18 && now.getMinutes() === 0){
+        sendDailyReminder();
+      }
+    },60000);
+
+    await checkRamadan();
+    /////// هنا بقى 👇👇👇
+    updateQuranStats();
+    // أي حاجة تانية عايزها تبدأ مع تحميل الصفحة
+    setInterval(updateClock,1000);
+    updateClock();
+    // highlightCurrentTask()
+
+    let deferredPrompt;
+    const installBtn = document.getElementById("installBtn");
+
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = "block";
+    // });
+
+      installBtn.addEventListener("click", async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          console.log("User response:", outcome);
+          deferredPrompt = null;
+          installBtn.style.display = "none";
+        }
+      });
+    });
+      // PWA Service Worker
+    // if ('serviceWorker' in navigator) {
+    //   navigator.serviceWorker.register('./service-worker.js');
+    // }
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('SW registered'))
+        .catch(err => console.log('SW registration failed:', err));
+    }
+    
+  });
+
+  
+  // // Function to update the Quran stats in the UI
+  // function updateQuranStats() {
+  //   const quranStats = JSON.parse(localStorage.getItem("quranStats")) || {};
+  //   const totalVerses = quranStats.totalVerses || 0;
+  //   const completedVerses = quranStats.completedVerses || 0;
+  //   const progress = totalVerses > 0 ? (completedVerses / totalVerses * 100) : 0;
+
+  //   document.getElementById("totalVerses").textContent = totalVerses;
+  //   document.getElementById("completedVerses").textContent = completedVerses;
+  //   document.getElementById("progressBar").style.width = `${progress}%`;
+  // }
+
+</script>
+</body>
+</html>
